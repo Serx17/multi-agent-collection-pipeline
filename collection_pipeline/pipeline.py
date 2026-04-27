@@ -9,17 +9,18 @@ from collection_pipeline.agents.scriptwriter import ScriptWriterAgent
 from collection_pipeline.agents.compliance import ComplianceAgent
 from collection_pipeline.utils.compliance_rules import FZ230Checker
 
-# Настройка логирования
 logging.basicConfig(level=logging.INFO, format='%(asctime)s - %(levelname)s - %(message)s')
 logger = logging.getLogger(__name__)
 
 class CollectionPipeline:
-    def __init__(self):
+    def __init__(self, mock_mode: bool = False):
         logger.info("🚀 Инициализация пайплайна взыскания...")
-        self.analyst = AnalystAgent()
-        self.strategist = StrategyAgent()
-        self.scriptwriter = ScriptWriterAgent()
-        self.compliance = ComplianceAgent()
+        self.mock_mode = mock_mode
+        if not mock_mode:
+            self.analyst = AnalystAgent()
+            self.strategist = StrategyAgent()
+            self.scriptwriter = ScriptWriterAgent()
+            self.compliance = ComplianceAgent()
 
     def run(self, debtor: DebtorRawData, calls_today: int = 0, calls_month: int = 0) -> Dict[str, Any]:
         start_time = datetime.now()
@@ -30,6 +31,26 @@ class CollectionPipeline:
             "final_script": None,
             "compliance_check": None
         }
+
+        # === MOCK MODE: Возвращаем тестовые данные без API ===
+        if self.mock_mode:
+            logger.info("🎭 Запуск в режиме эмуляции (mock_mode)...")
+            return {
+                "debtor_id": debtor.debtor_id,
+                "status": "completed (mock)",
+                "steps": [
+                    {"step": "fz230_check", "status": "passed"},
+                    {"step": "analysis", "risk": "medium"},
+                    {"step": "strategy", "name": "soft_reminder"}
+                ],
+                "final_script": {
+                    "opening": f"Добрый день, {debtor.full_name}. Это [Агентство] по вопросу задолженности.",
+                    "main": f"Напоминаем о задолженности {debtor.debt_amount} руб. Просим связаться с нами.",
+                    "objection": "Понимаем ваши обстоятельства. Давайте обсудим варианты решения.",
+                    "closing": "Ждем вашего звонка до конца дня. Спасибо."
+                },
+                "compliance_check": {"is_compliant": True, "issues": []}
+            }
 
         try:
             # 1. Pre-check: ФЗ-230

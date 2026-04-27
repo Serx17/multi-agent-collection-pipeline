@@ -10,28 +10,24 @@ class ScriptWriterAgent:
 
     def generate_script(self, profile: DebtorProfile, strategy: CollectionStrategy) -> CallScript:
         prompt = f"""
-        Ты — профессиональный тренер по холодным звонкам и переговорам.
-        Напиши скрипт разговора для оператора коллекторского агентства.
+        Ты — профессиональный оператор коллекторского агентства РФ.
+        Напиши скрипт разговора, СТРОГО соблюдая ФЗ-230.
+
+        ВАЖНО: Запрещены угрозы, унижения, давление и ложь.
+        Даже если стратегия 'firm_demand' или тон 'strict', оставайся в рамках закона и делового этикета.
 
         Контекст:
         - Должник: {profile.debtor_id}
-        - Тон голоса: {strategy.tone_of_voice}
+        - Тон: {strategy.tone_of_voice} (трактуй 'strict' как 'настойчивый и официальный', а не грубый)
         - Стратегия: {strategy.strategy_name}
-        - Ключевые аргументы: {', '.join(strategy.key_arguments)}
-        - Инсайты о должнике: {', '.join(profile.key_insights)}
-
-        Требования:
-        1. Соблюдай тон ({strategy.tone_of_voice}).
-        2. Используй аргументы из стратегии.
-        3. Будь краток и убедителен.
-        4. Язык: Русский.
+        - Аргументы: {', '.join(strategy.key_arguments)}
 
         Верни СТРОГО JSON:
         {{
-            "opening_phrase": "...",
-            "main_speech": "...",
-            "objection_handling": "...",
-            "closing_call_to_action": "..."
+            "opening_phrase": "Вежливое приветствие...",
+            "main_speech": "Суть звонка...",
+            "objection_handling": "Ответ на 'нет денег'...",
+            "closing_call_to_action": "Призыв к действию..."
         }}
         """
 
