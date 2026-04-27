@@ -27,7 +27,7 @@ class CollectionStrategy(BaseModel):
     next_step_deadline: str
 
 class CallScript(BaseModel):
-    opening_phrase: str
-    main_speech: str
-    objection_handling: str
-    closing_call_to_action: str
+    opening_phrase: str = Field(description="Фраза приветствия и представления")
+    main_speech: str = Field(description="Основная часть разговора с аргументами")
+    objection_handling: str = Field(description="Как ответить на возражение 'Нет денег'")
+    closing_call_to_action: str = Field(description="Призыв к действию в конце разговора")
